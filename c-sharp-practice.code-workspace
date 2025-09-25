@@ -4,6 +4,10 @@
 			"name": "CSharp",
 			"path": "."
 		},
+		{
+			"name": "wev-api",
+			"path": "./web-todo-api/"
+		}
 		
 	],
 }
