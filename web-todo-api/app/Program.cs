@@ -1,5 +1,6 @@
 using Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
+using Domain.Entities;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -31,12 +32,23 @@ builder.Services.AddDbContext<AppDb>(opt => opt.UseNpgsql(conn));
 var app = builder.Build();
 
 // 3) 起動時マイグレーション（開発向け）
-if (app.Environment.IsDevelopment() || 
-    builder.Configuration.GetValue<bool>("EF:MigrateOnStartup"))
+if (app.Environment.IsDevelopment() ||
+	builder.Configuration.GetValue<bool>("EF:MigrateOnStartup"))
 {
-    using var scope = app.Services.CreateScope();
-    var dbCtx = scope.ServiceProvider.GetRequiredService<AppDb>();
-    dbCtx.Database.Migrate();
+	using var scope = app.Services.CreateScope();
+	var dbCtx = scope.ServiceProvider.GetRequiredService<AppDb>();
+	dbCtx.Database.Migrate();
+	
+	 // 何か1件でもあればスキップ
+        if (!dbCtx.Todos.Any())
+        {
+            dbCtx.Todos.AddRange(
+                new Todo { Title = "牛乳を買う", Done = false },
+                new Todo { Title = "本を読む", Done = false },
+                new Todo { Title = "筋トレする", Done = true }
+            );
+            dbCtx.SaveChanges();
+        }
 }
 // 4) 最小エンドポイント
 app.MapGet("/hello", () => new { message = "Hello World!" });
