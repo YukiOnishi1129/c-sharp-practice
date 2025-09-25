@@ -53,4 +53,29 @@ if (app.Environment.IsDevelopment() ||
 // 4) 最小エンドポイント
 app.MapGet("/hello", () => new { message = "Hello World!" });
 
+app.MapGet("/todos", async (
+    AppDb db,
+    bool? done,
+    string? q,
+    int? skip,
+    int? take,
+    CancellationToken ct) =>
+{
+    var query = db.Todos.AsNoTracking().AsQueryable();
+
+    if (done.HasValue) query = query.Where(t => t.Done == done.Value);
+    if (!string.IsNullOrWhiteSpace(q))
+        // ILIKE で大文字小文字無視（Postgres）
+        query = query.Where(t => EF.Functions.ILike(t.Title, $"%{q}%"));
+
+    query = query.OrderBy(t => t.Title);
+
+    if (skip is > 0) query = query.Skip(skip.Value);
+    if (take is > 0) query = query.Take(Math.Min(take.Value, 100)); // 上限100
+
+    var items = await query.ToListAsync(ct);
+    return Results.Ok(items);
+});
+
+
 app.Run();
