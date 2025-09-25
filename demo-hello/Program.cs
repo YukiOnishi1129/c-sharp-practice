@@ -4,35 +4,38 @@ class Program
 {
 	static void Main(string[] args)
 	{
-		Random rand = new();
-		int answer = rand.Next(1, 11);
+		Console.Write("1つ目の数を入力");
+		double a = double.Parse(Console.ReadLine());
 
-		Console.WriteLine("1から10までの数字を当ててください。");
+		Console.Write("2つ目の数を入力");
+		double b = double.Parse(Console.ReadLine());
 
-		while (true)
+		Console.Write("演算子を入力(+,-,*,/)");
+		string op = Console.ReadLine();
+
+		double result = 0;
+
+		if (op == "+")
 		{
-			Console.Write("あなたの予想は？：");
-			string? input = Console.ReadLine();
-			if (input == null)
-			{
-				Console.WriteLine("入力がありません。もう一度入力してください。");
-				continue;
-			}
-			int guess = int.Parse(input);
-
-			if (guess == answer)
-			{
-				Console.WriteLine("正解です！");
-				break;
-			}
-			else if (guess < answer)
-			{
-				Console.WriteLine("もっと大きい数字です。");
-			}
-			else
-			{
-				Console.WriteLine("もっと小さい数字です。");
-			}
+			result = a + b;
 		}
+		else if (op == "-")
+		{
+			result = a - b;
+		}
+		else if (op == "*")
+		{
+			result = a * b;
+		}
+		else if (op == "/")
+		{
+			result = a / b;
+		}
+		else
+		{
+			Console.WriteLine("不正な演算子です");
+			return;
+		}
+		Console.WriteLine($"結果は {result} です");
 	}
 }
