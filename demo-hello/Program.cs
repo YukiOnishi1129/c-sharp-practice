@@ -4,7 +4,9 @@ class Program
 {
 	static void Main(string[] args)
 	{
-		Greeter.SayHello("World");
-		Greeter.SayHello("C#");
+		Person p1 = new("Alice");
+		p1.Introduce();
+		Person p2 = new("Bob");
+		p2.Introduce();
 	}
 }
