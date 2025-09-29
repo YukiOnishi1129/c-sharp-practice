@@ -5,7 +5,11 @@ namespace Infrastructure.Data
 {
     public class AppDb : DbContext
     {
-        public AppDb(DbContextOptions<AppDb> options) : base(options) { }
+        public AppDb(DbContextOptions<AppDb> options)
+            : base(options)
+        {
+        }
+
         public DbSet<Todo> Todos => Set<Todo>();
 
         protected override void OnModelCreating(ModelBuilder m)

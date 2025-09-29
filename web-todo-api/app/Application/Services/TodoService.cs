@@ -7,20 +7,20 @@ namespace Application.Services
 {
     public class TodoService : ITodoService
     {
-        private readonly ITodoRepository _todoRepository;
+        private readonly ITodoRepository todoRepository;
 
         public TodoService(ITodoRepository todoRepository)
         {
-            _todoRepository = todoRepository;
+            this.todoRepository = todoRepository;
         }
 
-        public async Task<IEnumerable<TodoDto>> GetAllAsync(TodoFilterDto filter, CancellationToken cancellationToken = default)
+        public async Task<IEnumerable<TodoDto>> GetAllAsync(TodoFilterDto? filter, CancellationToken cancellationToken = default)
         {
-            var todos = await _todoRepository.GetAllAsync(
-                filter.Done,
-                filter.TitleContains,
-                filter.Skip,
-                filter.Take,
+            var todos = await todoRepository.GetAllAsync(
+                filter?.Done,
+                filter?.TitleContains,
+                filter?.Skip,
+                filter?.Take,
                 cancellationToken);
 
             return todos.Select(MapToDto);
@@ -28,44 +28,56 @@ namespace Application.Services
 
         public async Task<TodoDto?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
         {
-            var todo = await _todoRepository.GetByIdAsync(id, cancellationToken);
+            var todo = await todoRepository.GetByIdAsync(id, cancellationToken);
             return todo != null ? MapToDto(todo) : null;
         }
 
         public async Task<TodoDto> CreateAsync(CreateTodoDto createDto, CancellationToken cancellationToken = default)
         {
+            ArgumentNullException.ThrowIfNull(createDto);
+
             var todo = new Todo
             {
                 Title = createDto.Title,
-                Done = createDto.Done
+                Done = createDto.Done,
             };
 
-            var createdTodo = await _todoRepository.CreateAsync(todo, cancellationToken);
+            var createdTodo = await todoRepository.CreateAsync(todo, cancellationToken);
             return MapToDto(createdTodo);
         }
 
         public async Task<TodoDto?> UpdateAsync(Guid id, UpdateTodoDto updateDto, CancellationToken cancellationToken = default)
         {
-            var todo = await _todoRepository.GetByIdAsync(id, cancellationToken);
+            ArgumentNullException.ThrowIfNull(updateDto);
+
+            var todo = await todoRepository.GetByIdAsync(id, cancellationToken);
             if (todo == null)
+            {
                 return null;
+            }
 
             if (updateDto.Title != null)
+            {
                 todo.Title = updateDto.Title;
-            
-            if (updateDto.Done.HasValue)
-                todo.Done = updateDto.Done.Value;
+            }
 
-            var updatedTodo = await _todoRepository.UpdateAsync(todo, cancellationToken);
+            if (updateDto.Done.HasValue)
+            {
+                todo.Done = updateDto.Done.Value;
+            }
+
+            var updatedTodo = await todoRepository.UpdateAsync(todo, cancellationToken);
             return MapToDto(updatedTodo);
         }
 
         public async Task<bool> DeleteAsync(Guid id, CancellationToken cancellationToken = default)
         {
-            if (!await _todoRepository.ExistsAsync(id, cancellationToken))
+            if (!await todoRepository.ExistsAsync(id, cancellationToken))
+            {
                 return false;
+            }
 
-            await _todoRepository.DeleteAsync(id, cancellationToken);
+            await todoRepository.DeleteAsync(id, cancellationToken);
             return true;
         }
 
@@ -75,7 +87,7 @@ namespace Application.Services
             {
                 Id = todo.Id,
                 Title = todo.Title,
-                Done = todo.Done
+                Done = todo.Done,
             };
         }
     }

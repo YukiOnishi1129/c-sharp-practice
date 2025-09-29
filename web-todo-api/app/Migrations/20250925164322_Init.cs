@@ -1,4 +1,3 @@
-﻿using System;
 using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
@@ -17,7 +16,7 @@ namespace TodoApi.Migrations
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
                     Title = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: false),
-                    Done = table.Column<bool>(type: "boolean", nullable: false)
+                    Done = table.Column<bool>(type: "boolean", nullable: false),
                 },
                 constraints: table =>
                 {

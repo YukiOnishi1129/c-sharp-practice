@@ -42,14 +42,16 @@ namespace Presentation.Endpoints
             CancellationToken cancellationToken)
         {
             if (skip < 0 || take < 0)
+            {
                 return TypedResults.BadRequest();
+            }
 
             var filter = new TodoFilterDto
             {
                 Done = done,
                 TitleContains = q,
                 Skip = skip,
-                Take = take
+                Take = take,
             };
 
             var todos = await todoService.GetAllAsync(filter, cancellationToken);
@@ -62,8 +64,8 @@ namespace Presentation.Endpoints
             CancellationToken cancellationToken)
         {
             var todo = await todoService.GetByIdAsync(id, cancellationToken);
-            return todo != null 
-                ? TypedResults.Ok(todo) 
+            return todo != null
+                ? TypedResults.Ok(todo)
                 : TypedResults.NotFound();
         }
 
@@ -73,10 +75,14 @@ namespace Presentation.Endpoints
             CancellationToken cancellationToken)
         {
             if (string.IsNullOrWhiteSpace(createDto.Title))
+            {
                 return TypedResults.BadRequest("Title is required");
+            }
 
             if (createDto.Title.Length > 200)
+            {
                 return TypedResults.BadRequest("Title must be 200 characters or less");
+            }
 
             var todo = await todoService.CreateAsync(createDto, cancellationToken);
             return TypedResults.Created($"/todos/{todo.Id}", todo);
@@ -89,14 +95,18 @@ namespace Presentation.Endpoints
             CancellationToken cancellationToken)
         {
             if (updateDto.Title != null && string.IsNullOrWhiteSpace(updateDto.Title))
+            {
                 return TypedResults.BadRequest("Title cannot be empty");
+            }
 
             if (updateDto.Title?.Length > 200)
+            {
                 return TypedResults.BadRequest("Title must be 200 characters or less");
+            }
 
             var todo = await todoService.UpdateAsync(id, updateDto, cancellationToken);
-            return todo != null 
-                ? TypedResults.Ok(todo) 
+            return todo != null
+                ? TypedResults.Ok(todo)
                 : TypedResults.NotFound();
         }
 
@@ -106,8 +116,8 @@ namespace Presentation.Endpoints
             CancellationToken cancellationToken)
         {
             var deleted = await todoService.DeleteAsync(id, cancellationToken);
-            return deleted 
-                ? TypedResults.NoContent() 
+            return deleted
+                ? TypedResults.NoContent()
                 : TypedResults.NotFound();
         }
     }
